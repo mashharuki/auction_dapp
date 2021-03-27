@@ -3,28 +3,26 @@ pragma solidity ^0.5.16;
 import "./DeedRepository.sol";
 
 /**
- * @title Auction Repository
- * This contracts allows auctions to be created for non-fungible tokens
- * Moreover, it includes the basic functionalities of an auction house
+ * @title オークションコントラクト
  */
 contract AuctionRepository {
     
-    // Array with all auctions
+    // オークションデータを格納する配列
     Auction[] public auctions;
-
-    // Mapping from auction index to user bids
+    // オークションインデックスとユーザー入札のマッピング
     mapping(uint256 => Bid[]) public auctionBids;
-
-    // Mapping from owner to a list of owned auctions
+    // オーナーと所有オークションリストのマッピング
     mapping(address => uint[]) public auctionOwner;
 
-    // Bid struct to hold bidder and amount
+    // 入札者と入札額を表す構造体
     struct Bid {
+        // 入札者
         address payable from;
+        // 入札額
         uint256 amount;
     }
 
-    // Auction struct which holds all the required info
+    // 必要事項を全て保持するオークションの構造体
     struct Auction {
         string name;
         uint256 blockDeadline;
@@ -36,6 +34,15 @@ contract AuctionRepository {
         bool active;
         bool finalized;
     }
+
+    // 入札が成功した時のイベント
+    event BidSuccess(address _from, uint _auctionId);
+    // オークションが作成された時のイベント
+    event AuctionCreated(address _owner, uint _auctionId);
+    // オークションがキャンセルされた時のイベント
+    event AuctionCanceled(address _owner, uint _auctionId);
+    // オークションが終了された時のイベント
+    event AuctionFinalized(address _owner, uint _auctionId);
 
     /**
     * @dev Guarantees msg.sender is owner of the given auction
@@ -58,9 +65,10 @@ contract AuctionRepository {
     }
 
     /**
-    * @dev Disallow payments to this contract directly
+    * フォールバック関数
     */
     function() external {
+        // 入金を拒否する。
         revert();
     }
 
@@ -288,15 +296,4 @@ contract AuctionRepository {
         auctionBids[_auctionId].push(newBid);
         emit BidSuccess(msg.sender, _auctionId);
     }
-
-    event BidSuccess(address _from, uint _auctionId);
-
-    // AuctionCreated is fired when an auction is created
-    event AuctionCreated(address _owner, uint _auctionId);
-
-    // AuctionCanceled is fired when an auction is canceled
-    event AuctionCanceled(address _owner, uint _auctionId);
-
-    // AuctionFinalized is fired when an auction is finalized
-    event AuctionFinalized(address _owner, uint _auctionId);
 }
