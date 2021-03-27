@@ -1,4 +1,4 @@
-# Decentralized Auction Application on Ethereum
+# 非中央集権型アプリケーション(Dapp)のサンプルアプリケーションプロジェクト
 
 This project aims to implement basic functionalities of an auction platform using Ethereum.
 
